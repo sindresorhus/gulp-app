@@ -2,6 +2,8 @@
 
 > [gulp](https://github.com/gulpjs/gulp) as an app *(OS X)*
 
+It lets you easily run tasks from the nearest gulpfile of the current folder in Finder.
+
 ![](media/screenshot.png)
 
 *OS X only for now, but will expand when further along.*
