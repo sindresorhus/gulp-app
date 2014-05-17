@@ -31,7 +31,6 @@
   "private": "true",
   "dependencies": {
     "display-notification": "^0.1.0",
-    "finder-path": "^0.1.0",
     "findup-sync": "^0.1.3",
     "gulp": "^3.6.2",
     "lodash": "^2.4.1",

@@ -4,7 +4,7 @@ var spawn = require('child_process').spawn;
 var gui = require('nw.gui');
 var _ = require('lodash');
 var findupSync = require('findup-sync');
-var finderPath = require('finder-path');
+var currentPath = require('current-path');
 var requireModify = require('require-modify');
 var displayNotification = require('display-notification');
 var nodeUtil = require('./node-util');
@@ -94,7 +94,7 @@ function updateTrayMenu() {
 }
 
 function updateTray() {
-	finderPath(function (err, dirPath) {
+	currentPath(function (err, dirPath) {
 		setTimeout(updateTray, TRAY_UPDATE_INTERVAL);
 
 		process.chdir(dirPath);
