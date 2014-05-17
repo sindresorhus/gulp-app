@@ -103,7 +103,7 @@ function updateTray() {
 			var pkg = require(findupSync('package.json'));
 			var name = pkg.name || path.basename(dirPath, path.extname(dirPath));
 			var gulpfile = requireModify(findupSync('gulpfile.js'), function (src) {
-				return src + ';module.exports = gulp';
+				return src + ';module.exports = require(\'gulp\')';
 			});
 
 			var tasks = _.pull(Object.keys(gulpfile.tasks), 'default');
