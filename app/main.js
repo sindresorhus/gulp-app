@@ -10,6 +10,7 @@ var displayNotification = require('display-notification');
 var nodeUtil = require('./node-util');
 var dirname = nodeUtil.dirname;
 
+var DEBUG = true;
 var TRAY_UPDATE_INTERVAL = 1000;
 
 function runTask(taskName) {
@@ -31,9 +32,7 @@ function runTask(taskName) {
 	cp.stderr.setEncoding('utf8');
 	cp.stderr.on('data', function (data) {
 		console.error(data);
-		displayNotification({
-			text: '[error] ' + data
-		});
+		displayNotification({text: '[error] ' + data});
 	});
 
 	cp.on('exit', function (code) {
@@ -90,14 +89,13 @@ function createTrayMenu(name, tasks, status) {
 	return menu;
 }
 
+function updateTrayMenu() {
+	tray.menu = createTrayMenu.apply(null, arguments);
+}
+
 function updateTray() {
 	finderPath(function (err, dirPath) {
 		setTimeout(updateTray, TRAY_UPDATE_INTERVAL);
-
-		if (!dirPath) {
-			tray.menu = createTrayMenu('No gulpfile found');
-			return;
-		}
 
 		process.chdir(dirPath);
 
@@ -111,18 +109,21 @@ function updateTray() {
 			var tasks = _.pull(Object.keys(gulpfile.tasks), 'default');
 			tasks.unshift('default');
 
-			tray.menu = createTrayMenu(name, tasks);
+			updateTrayMenu(name, tasks);
 		} catch (err) {
-			tray.menu = createTrayMenu('No gulpfile found');
-			console.log(err.message);
+			updateTrayMenu('No gulpfile found');
+			console.log(err);
 		}
 	});
 }
 
-var win = gui.Window.get();
 var tray = new gui.Tray({
 	icon: 'menubar-icon@2x.png',
 	alticon: 'menubar-icon-alt@2x.png'
 });
 
 updateTray();
+
+if (DEBUG) {
+	gui.Window.get().showDevTools();
+}
