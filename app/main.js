@@ -2,23 +2,20 @@
 var path = require('path');
 var spawn = require('child_process').spawn;
 var gui = require('nw.gui');
-var _ = require('lodash');
 var findupSync = require('findup-sync');
 var currentPath = require('current-path');
-var requireModify = require('require-modify');
 var displayNotification = require('display-notification');
-var nodeUtil = require('./node-util');
-var dirname = nodeUtil.dirname;
+var util = require('./node-util');
+var getGulpTasks = require('./get-gulp-tasks');
 
 var DEBUG = true;
 var TRAY_UPDATE_INTERVAL = 1000;
 
 function runTask(taskName) {
-	var gulpPath = path.join(dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
-
 	// TODO: find workaround for node-webkit bug:
 	// https://github.com/rogerwang/node-webkit/issues/213
 	// so I don't have to hardcode the node path
+	var gulpPath = path.join(util.dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
 	var cp = spawn('/usr/local/bin/node', [gulpPath, taskName, '--no-color']);
 
 	cp.stdout.setEncoding('utf8');
@@ -42,6 +39,8 @@ function runTask(taskName) {
 				subtitle: 'Finished running tasks'
 			});
 		} else {
+			console.error('Exited with error code ' + code);
+
 			displayNotification({
 				title: 'gulp',
 				subtitle: 'Exited with error code ' + code,
@@ -99,20 +98,26 @@ function updateTray() {
 
 		process.chdir(dirPath);
 
-		try {
-			var pkg = require(findupSync('package.json'));
-			var name = pkg.name || path.basename(dirPath, path.extname(dirPath));
-			var gulpfile = requireModify(findupSync('gulpfile.js'), function (src) {
-				return src + ';module.exports = gulp';
-			});
+		var pkg;
+		var pkgPath = findupSync('package.json');
 
-			var tasks = _.pull(Object.keys(gulpfile.tasks), 'default');
-			tasks.unshift('default');
+		if (pkgPath) {
+			pkg = require(pkgPath);
+		} else {
+			console.error('Couldn\'t find package.json');
+			return;
+		}
+
+		var name = pkg.name || path.basename(dirPath, path.extname(dirPath));
+
+		getGulpTasks(function (err, tasks) {
+			if (err) {
+				console.error(err);
+				return;
+			}
 
 			updateTrayMenu(name, tasks);
-		} catch (err) {
-			console.log(err);
-		}
+		});
 	});
 }
 
