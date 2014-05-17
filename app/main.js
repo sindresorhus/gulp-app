@@ -111,7 +111,6 @@ function updateTray() {
 
 			updateTrayMenu(name, tasks);
 		} catch (err) {
-			updateTrayMenu('No gulpfile found');
 			console.log(err);
 		}
 	});
@@ -122,6 +121,7 @@ var tray = new gui.Tray({
 	alticon: 'menubar-icon-alt@2x.png'
 });
 
+updateTrayMenu('No gulpfile found');
 updateTray();
 
 if (DEBUG) {
