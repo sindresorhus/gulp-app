@@ -13,7 +13,7 @@ Easily run gulp tasks from the current directory in Finder and get notified when
 
 [Download](https://github.com/sindresorhus/gulp-app/releases) the app, unzip, and move it to the `Applications` folder.
 
-*Make sure your node binary is in `/usr/local/bin` by running `$ which node`. It's [currently hard-coded](https://github.com/sindresorhus/gulp-app/blob/1b7fd477653f5b23b999a0e89667f9a281a41797/app/main.js#L19-L22) because of a node-webkit [bug](https://github.com/rogerwang/node-webkit/issues/213). Devtools is opened with the app to make it easier to debug issues. Feel free to close it.*
+*Devtools is opened with the app to make it easier to debug issues. Feel free to close it.*
 
 Feedback wanted :)
 

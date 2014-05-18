@@ -1,6 +1,5 @@
 {
   "name": "gulp-app",
-  "version": "0.0.0",
   "description": "gulp as an app (OS X)",
   "license": "MIT",
   "repository": "sindresorhus/gulp-app",

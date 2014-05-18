@@ -11,12 +11,18 @@ var getGulpTasks = require('./get-gulp-tasks');
 var DEBUG = true;
 var TRAY_UPDATE_INTERVAL = 1000;
 
+// fix the $PATH on OS X
+// OS X doesn't read .bashrc/.zshrc for GUI apps
+if (process.platform === 'darwin') {
+	process.env.PATH = process.env.PATH + ':/usr/local/bin';
+}
+
 function runTask(taskName) {
 	// TODO: find workaround for node-webkit bug:
 	// https://github.com/rogerwang/node-webkit/issues/213
 	// so I don't have to hardcode the node path
 	var gulpPath = path.join(util.dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
-	var cp = spawn('/usr/local/bin/node', [gulpPath, taskName, '--no-color']);
+	var cp = spawn(gulpPath, [taskName, '--no-color']);
 
 	cp.stdout.setEncoding('utf8');
 	cp.stdout.on('data', function (data) {
