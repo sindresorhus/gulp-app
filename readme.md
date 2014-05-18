@@ -4,7 +4,7 @@
 
 Easily run gulp tasks from the current directory in Finder and get notified when it's finished.
 
-![](media/screenshot.png)
+<img src="media/screenshot.png" width="315">
 
 *OS X only for now, but will expand when further along.*
 
