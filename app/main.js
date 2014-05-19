@@ -14,7 +14,8 @@ var TRAY_UPDATE_INTERVAL = 1000;
 // fix the $PATH on OS X
 // OS X doesn't read .bashrc/.zshrc for GUI apps
 if (process.platform === 'darwin') {
-	process.env.PATH = process.env.PATH + ':/usr/local/bin';
+	process.env.PATH += ':/usr/local/bin';
+	process.env.PATH += ':' + process.env.HOME + '/.nodebrew/current/bin';
 }
 
 function runTask(taskName) {
