@@ -110,7 +110,7 @@ function updateTray() {
 		if (pkgPath) {
 			pkg = require(pkgPath);
 		} else {
-			console.error('Couldn\'t find package.json');
+			console.log('Couldn\'t find package.json.');
 			return;
 		}
 
@@ -118,7 +118,7 @@ function updateTray() {
 
 		getGulpTasks(function (err, tasks) {
 			if (err) {
-				console.error(err);
+				console.log(err);
 				return;
 			}
 
