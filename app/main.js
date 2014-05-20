@@ -15,7 +15,7 @@ var TRAY_UPDATE_INTERVAL = 1000;
 // OS X doesn't read .bashrc/.zshrc for GUI apps
 if (process.platform === 'darwin') {
 	process.env.PATH += ':/usr/local/bin';
-	process.env.PATH += ':' + process.env.HOME + '/.nodebrew/current/bin';
+	process.env.PATH += ':' + process.env.HOME + '/.nodebrew/current/bin';	
 }
 
 function runTask(taskName) {
@@ -23,7 +23,11 @@ function runTask(taskName) {
 	// https://github.com/rogerwang/node-webkit/issues/213
 	// so I don't have to hardcode the node path
 	var gulpPath = path.join(util.dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
-	var cp = spawn(gulpPath, [taskName, '--no-color']);
+	var args = [taskName, '--no-color'];
+	if ('yes' == localStorage.getItem('config_coffee')){
+		args = args.concat('--require','coffee-script/register');
+	}
+	var cp = spawn(gulpPath, args);
 
 	cp.stdout.setEncoding('utf8');
 	cp.stdout.on('data', function (data) {
@@ -86,6 +90,32 @@ function createTrayMenu(name, tasks, status) {
 		});
 	}
 
+	// Options and submenus
+	menu.append(new gui.MenuItem({type: 'separator'}));
+	var item_options = new gui.MenuItem({
+		label: 'Options'
+	})
+	var submenu = new gui.Menu();
+	submenu.append(new gui.MenuItem({
+		type:'checkbox',
+		label: 'gulpfile.js',
+		checked: true,
+		enabled: false
+	}));
+	var item_coffee = new gui.MenuItem({
+		type:'checkbox',
+		label: 'gulpfile.coffee',
+		checked: ('yes' == localStorage.getItem('config_coffee')),
+		click: function () {
+			var flag = ('yes' == localStorage.getItem('config_coffee'));
+			localStorage.setItem('config_coffee', flag ? 'no' : 'yes')
+			item_coffee.checked = !flag;
+		}
+	});
+	submenu.append(item_coffee);
+	item_options.submenu = submenu;
+	menu.append(item_options);
+
 	menu.append(new gui.MenuItem({type: 'separator'}));
 	menu.append(new gui.MenuItem({
 		label: 'Quit',
@@ -116,8 +146,10 @@ function updateTray() {
 		}
 
 		var name = pkg.name || path.basename(dirPath, path.extname(dirPath));
-
-		getGulpTasks(function (err, tasks) {
+		var options = {
+			config_coffee: localStorage.getItem('config_coffee')
+		};
+		getGulpTasks(options, function (err, tasks) {
 			if (err) {
 				console.log(err);
 				return;
@@ -126,6 +158,11 @@ function updateTray() {
 			updateTrayMenu(name, tasks);
 		});
 	});
+}
+
+// Default options
+if (!localStorage.getItem('config_coffee')){
+	localStorage.setItem('config_coffee', 'no');
 }
 
 var tray = new gui.Tray({

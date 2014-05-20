@@ -6,8 +6,12 @@ var _ = require('lodash');
 var gulpPath = path.join(__dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
 var re = /] (?:├|└)─[^\w]+(\w+)/g;
 
-module.exports = function (cb) {
-	execFile(gulpPath, ['--tasks', '--no-color'], function (err, stdout) {
+module.exports = function (options, cb) {
+	var args = ['--tasks', '--no-color'];
+	if ('yes' == options.config_coffee){
+		args = args.concat('--require','coffee-script/register');
+	}
+	execFile(gulpPath, args, function (err, stdout) {
 		if (err) {
 			return cb(err);
 		}
