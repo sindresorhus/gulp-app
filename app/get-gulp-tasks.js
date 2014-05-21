@@ -7,7 +7,7 @@ var gulpPath = path.join(__dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
 var re = /] (?:├|└)─[^\w]+(\w+)/g;
 
 module.exports = function (cb) {
-	execFile(gulpPath, ['--tasks', '--no-color'], function (err, stdout) {
+	execFile('node', [gulpPath, '--tasks', '--no-color'], function (err, stdout) {
 		if (err) {
 			return cb(err);
 		}
