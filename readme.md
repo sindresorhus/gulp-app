@@ -18,6 +18,11 @@ Easily run gulp tasks from the current directory in Finder and get notified when
 Feedback wanted :)
 
 
+## Launch on startup
+
+Follow this [guide](https://github.com/sindresorhus/guides/blob/master/launch-app-on-startup-osx.md) if you would like the app to launch when you start your computer.
+
+
 ## Dev
 
 ##### Setup
