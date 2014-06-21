@@ -132,7 +132,7 @@ function updateTray() {
 				return;
 			}
 			// Only update the TrayMenu if the path changed
-			if ( foundForPath !== dirPath ) {
+			if (foundForPath !== dirPath) {
 				foundForPath = dirPath;
 				updateTrayMenu(name, tasks);
 			}
