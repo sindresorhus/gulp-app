@@ -27,7 +27,7 @@ Follow this [guide](https://github.com/sindresorhus/guides/blob/master/launch-ap
 
 ##### Setup
 
-- Download [atom-shell](https://github.com/atom/atom-shell/releases) and put it in `/Applications`
+- Download [atom-shell](https://github.com/atom/atom-shell/releases), rename `Atom.app` to `atom-shell.app` and put it in `/Applications`
 - Add `alias atom-shell='/Applications/atom-shell.app/Contents/MacOS/atom'` to your .bashrc/.zshrc
 
 ##### Run
