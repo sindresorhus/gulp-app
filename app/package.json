@@ -29,7 +29,6 @@
     "display-notification": "^0.1.0",
     "findup-sync": "^0.1.3",
     "gulp": "^3.6.2",
-    "lodash": "^2.4.1",
-    "require-modify": "^0.1.0"
+    "lodash": "^2.4.1"
   }
 }
