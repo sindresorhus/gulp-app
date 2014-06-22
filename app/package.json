@@ -3,7 +3,6 @@
   "description": "gulp as an app (OS X)",
   "license": "MIT",
   "repository": "sindresorhus/gulp-app",
-  "main": "main.js",
   "author": {
     "name": "Sindre Sorhus",
     "email": "sindresorhus@gmail.com",
