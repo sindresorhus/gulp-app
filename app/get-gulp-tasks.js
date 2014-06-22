@@ -4,20 +4,14 @@ var execFile = require('child_process').execFile;
 var _ = require('lodash');
 
 var gulpPath = path.join(__dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
-var re = /] (?:├|└)─[^\w]+(\w+)/g;
 
 module.exports = function (cb) {
-	execFile('node', [gulpPath, '--tasks', '--no-color'], function (err, stdout) {
+	execFile('node', [gulpPath, '--tasks-simple'], function (err, stdout) {
 		if (err) {
 			return cb(err);
 		}
 
-		var match;
-		var tasks = [];
-
-		while (match = re.exec(stdout)) {
-			tasks.push(match[1]);
-		}
+		var tasks = stdout.trim().split('\n');
 
 		tasks = _.pull(tasks, 'default');
 		tasks.unshift('default');
