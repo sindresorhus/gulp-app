@@ -1,13 +1,18 @@
 'use strict';
 var path = require('path');
 var spawn = require('child_process').spawn;
-var gui = require('nw.gui');
 var findupSync = require('findup-sync');
 var currentPath = require('current-path');
 var displayNotification = require('display-notification');
-var util = require('./node-util');
 var getGulpTasks = require('./get-gulp-tasks');
 
+
+var app = require('app');
+var Tray = require('tray');
+var Menu = require('menu');
+var MenuItem = require('menu-item');
+
+var tray = null;
 var DEBUG = true;
 var TRAY_UPDATE_INTERVAL = 1000;
 
@@ -22,7 +27,7 @@ function runTask(taskName) {
 	// TODO: find workaround for node-webkit bug:
 	// https://github.com/rogerwang/node-webkit/issues/213
 	// so I don't have to hardcode the node path
-	var gulpPath = path.join(util.dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
+	var gulpPath = path.join(__dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
 	var cp = spawn('node', [gulpPath, taskName, '--no-color']);
 
 	cp.stdout.setEncoding('utf8');
@@ -58,26 +63,26 @@ function runTask(taskName) {
 }
 
 function createTrayMenu(name, tasks, status) {
-	var menu = new gui.Menu();
+	var menu = new Menu();
 
-	menu.append(new gui.MenuItem({
+	menu.append(new MenuItem({
 		label: name,
 		enabled: false
 	}));
 
 	if (status) {
-		menu.append(new gui.MenuItem({type: 'separator'}));
-		menu.append(new gui.MenuItem({
+		menu.append(new MenuItem({type: 'separator'}));
+		menu.append(new MenuItem({
 			label: status,
 			enabled: false
 		}));
 	}
 
 	if (tasks && tasks.length > 0) {
-		menu.append(new gui.MenuItem({type: 'separator'}));
+		menu.append(new MenuItem({type: 'separator'}));
 
 		tasks.forEach(function (el) {
-			menu.append(new gui.MenuItem({
+			menu.append(new MenuItem({
 				label: el,
 				click: function () {
 					runTask(el);
@@ -86,17 +91,21 @@ function createTrayMenu(name, tasks, status) {
 		});
 	}
 
-	menu.append(new gui.MenuItem({type: 'separator'}));
-	menu.append(new gui.MenuItem({
+	menu.append(new MenuItem({type: 'separator'}));
+	menu.append(new MenuItem({
 		label: 'Quit',
-		click: gui.App.quit
+		click: app.quit
 	}));
+
+	tray.setContextMenu(menu);
 
 	return menu;
 }
 
+var foundForPath = null;
+
 function updateTrayMenu() {
-	tray.menu = createTrayMenu.apply(null, arguments);
+	createTrayMenu.apply(null, arguments);
 }
 
 function updateTray() {
@@ -122,20 +131,24 @@ function updateTray() {
 				console.log(err);
 				return;
 			}
-
-			updateTrayMenu(name, tasks);
+			// Only update the TrayMenu if the path changed
+			if (foundForPath !== dirPath) {
+				foundForPath = dirPath;
+				updateTrayMenu(name, tasks);
+			}
 		});
 	});
 }
 
-var tray = new gui.Tray({
-	icon: 'menubar-icon@2x.png',
-	alticon: 'menubar-icon-alt@2x.png'
+app.on('ready', function(){
+	tray = new Tray('./menubar-icon.png');
+	tray.setPressedImage('./menubar-icon-alt.png');
+
+	updateTrayMenu('No gulpfile found');
+	updateTray();
+
+	if (DEBUG) {
+		//gui.Window.get().showDevTools();
+	}
 });
 
-updateTrayMenu('No gulpfile found');
-updateTray();
-
-if (DEBUG) {
-	gui.Window.get().showDevTools();
-}

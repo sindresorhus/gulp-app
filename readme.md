@@ -27,14 +27,14 @@ Follow this [guide](https://github.com/sindresorhus/guides/blob/master/launch-ap
 
 ##### Setup
 
-- Download [node-webkit](https://github.com/rogerwang/node-webkit#downloads) and put it in `/Applications`
-- Add `alias nw='/Applications/node-webkit.app/Contents/MacOS/node-webkit'` to your .bashrc/.zshrc
+- Download [atom-shell](https://github.com/atom/atom-shell/releases) and put it in `/Applications`
+- Add `alias atom-shell='/Applications/atom-shell.app/Contents/MacOS/atom'` to your .bashrc/.zshrc
 
 ##### Run
 
 - `cd` into the `app` directory
 - Run `npm install` *(only first time)*
-- Run `nw .`
+- Run `atom-shell .`
 
 
 ## License
