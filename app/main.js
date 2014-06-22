@@ -6,7 +6,6 @@ var currentPath = require('current-path');
 var displayNotification = require('display-notification');
 var getGulpTasks = require('./get-gulp-tasks');
 
-
 var app = require('app');
 var Tray = require('tray');
 var Menu = require('menu');
@@ -24,11 +23,8 @@ if (process.platform === 'darwin') {
 }
 
 function runTask(taskName) {
-	// TODO: find workaround for node-webkit bug:
-	// https://github.com/rogerwang/node-webkit/issues/213
-	// so I don't have to hardcode the node path
 	var gulpPath = path.join(__dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
-	var cp = spawn('node', [gulpPath, taskName, '--no-color']);
+	var cp = spawn(gulpPath, [taskName, '--no-color']);
 
 	cp.stdout.setEncoding('utf8');
 	cp.stdout.on('data', function (data) {
@@ -131,6 +127,7 @@ function updateTray() {
 				console.log(err);
 				return;
 			}
+
 			// Only update the TrayMenu if the path changed
 			if (foundForPath !== dirPath) {
 				foundForPath = dirPath;
@@ -141,8 +138,8 @@ function updateTray() {
 }
 
 app.on('ready', function(){
-	tray = new Tray('./menubar-icon.png');
-	tray.setPressedImage('./menubar-icon-alt.png');
+	tray = new Tray('menubar-icon.png');
+	tray.setPressedImage('menubar-icon-alt.png');
 
 	updateTrayMenu('No gulpfile found');
 	updateTray();
