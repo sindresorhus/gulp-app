@@ -11,9 +11,13 @@ var Tray = require('tray');
 var Menu = require('menu');
 var MenuItem = require('menu-item');
 
-var tray = null;
+var tray;
 var DEBUG = true;
 var TRAY_UPDATE_INTERVAL = 1000;
+
+require('crash-reporter').start();
+
+app.dock.hide();
 
 // fix the $PATH on OS X
 // OS X doesn't read .bashrc/.zshrc for GUI apps
@@ -137,9 +141,9 @@ function updateTray() {
 	});
 }
 
-app.on('ready', function(){
-	tray = new Tray('menubar-icon.png');
-	tray.setPressedImage('menubar-icon-alt.png');
+app.on('ready', function () {
+	tray = new Tray(path.join(__dirname, '/menubar-icon.png'));
+	tray.setPressedImage(path.join(__dirname, 'menubar-icon-alt.png'));
 
 	updateTrayMenu('No gulpfile found');
 	updateTray();
@@ -148,4 +152,3 @@ app.on('ready', function(){
 		//gui.Window.get().showDevTools();
 	}
 });
-
