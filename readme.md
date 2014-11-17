@@ -13,10 +13,6 @@ Easily run gulp tasks from the current directory in Finder and get notified when
 
 [Download](https://github.com/sindresorhus/gulp-app/releases) the app, unzip, and move it to the `Applications` folder.
 
-*Devtools is opened with the app to make it easier to debug issues. Feel free to close it.*
-
-Feedback wanted :)
-
 
 ## Launch on startup
 
