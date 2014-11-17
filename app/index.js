@@ -4,27 +4,33 @@ var spawn = require('child_process').spawn;
 var findupSync = require('findup-sync');
 var currentPath = require('current-path');
 var displayNotification = require('display-notification');
-var getGulpTasks = require('./get-gulp-tasks');
+var getGulpTasks = require('get-gulp-tasks');
+var _ = require('lodash');
+var fixPath = require('fix-path');
 
 var app = require('app');
+var dialog = require('dialog');
 var Tray = require('tray');
 var Menu = require('menu');
 var MenuItem = require('menu-item');
 
-var tray;
 var DEBUG = true;
 var TRAY_UPDATE_INTERVAL = 1000;
+
+var tray;
+var prevPath;
+var recentProjects = [];
+var currentProject = {
+	name: 'No gulpfile found',
+	tasks: []
+};
 
 require('crash-reporter').start();
 
 app.dock.hide();
 
 // fix the $PATH on OS X
-// OS X doesn't read .bashrc/.zshrc for GUI apps
-if (process.platform === 'darwin') {
-	process.env.PATH += ':/usr/local/bin';
-	process.env.PATH += ':' + process.env.HOME + '/.nodebrew/current/bin';
-}
+fixPath();
 
 function runTask(taskName) {
 	var gulpPath = path.join(__dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
@@ -62,26 +68,81 @@ function runTask(taskName) {
 	});
 }
 
-function createTrayMenu(name, tasks, status) {
+function addRecentProject(project) {
+	recentProjects = recentProjects.filter(function (el) {
+		return el.name !== project.name;
+	});
+
+	if (recentProjects.length === 10) {
+		recentProjects.pop();
+	}
+
+	recentProjects.unshift(project);
+}
+
+function createProjectMenu() {
+	var menu = new Menu();
+
+	if (process.platform === 'darwin' || process.platform === 'win32') {
+		menu.append(new MenuItem({
+			label: 'Follow Finder'
+		}));
+
+		menu.append(new MenuItem({type: 'separator'}));
+	}
+
+	if (recentProjects.length > 0) {
+		recentProjects.forEach(function (el) {
+			menu.append(new MenuItem({
+				label: el.name,
+				type: 'radio',
+				checked: el.name === currentProject.name
+			}));
+		});
+
+		menu.append(new MenuItem({type: 'separator'}));
+	}
+
+	menu.append(new MenuItem({
+		label: 'Open Project',
+		click: function () {
+			dialog.showOpenDialog(null, {
+				title: 'Pick a project',
+				properties: ['openDirectory'],
+				defaultPath: path.resolve(process.cwd(), '..')
+			}, function (dirs) {
+				setActiveProject(dirs[0]);
+				addRecentProject(currentProject);
+				createTrayMenu();
+			});
+		}
+	}));
+
+	menu.append(new MenuItem({type: 'separator'}));
+
+	menu.append(new MenuItem({
+		label: 'Clear',
+		click: function () {
+			recentProjects.length = 0;
+			createTrayMenu();
+		}
+	}));
+
+	return menu;
+}
+
+function createTrayMenu() {
 	var menu = new Menu();
 
 	menu.append(new MenuItem({
-		label: name,
-		enabled: false
+		label: currentProject.name,
+		submenu: createProjectMenu()
 	}));
 
-	if (status) {
-		menu.append(new MenuItem({type: 'separator'}));
-		menu.append(new MenuItem({
-			label: status,
-			enabled: false
-		}));
-	}
-
-	if (tasks && tasks.length > 0) {
+	if (currentProject.tasks && currentProject.tasks.length > 0) {
 		menu.append(new MenuItem({type: 'separator'}));
 
-		tasks.forEach(function (el) {
+		currentProject.tasks.forEach(function (el) {
 			menu.append(new MenuItem({
 				label: el,
 				click: function () {
@@ -102,42 +163,50 @@ function createTrayMenu(name, tasks, status) {
 	return menu;
 }
 
-var foundForPath = null;
+function setActiveProject(dirPath) {
+	currentProject = {};
+	process.chdir(dirPath);
 
-function updateTrayMenu() {
-	createTrayMenu.apply(null, arguments);
+	var pkgPath = findupSync('package.json');
+
+	if (!pkgPath) {
+		console.log('Couldn\'t find package.json');
+		return;
+	}
+
+	var pkg = require(pkgPath);
+
+	currentProject.path = dirPath;
+	currentProject.name = pkg.name || path.basename(dirPath, path.extname(dirPath));
+
+	getGulpTasks(function (err, tasks) {
+		if (err) {
+			if (err.code !== 'MODULE_NOT_FOUND') {
+				console.error(err);
+			}
+
+			return;
+		}
+
+		tasks = _.pull(tasks, 'default');
+		tasks.unshift('default');
+
+		currentProject.tasks = tasks;
+
+		console.log(prevPath, dirPath);
+
+		// TODO: this prevent updating of tasklist from changes in the gulpfile
+		if (prevPath !== dirPath) {
+			prevPath = dirPath;
+			createTrayMenu();
+		}
+	});
 }
 
 function updateTray() {
 	currentPath(function (err, dirPath) {
 		setTimeout(updateTray, TRAY_UPDATE_INTERVAL);
-
-		process.chdir(dirPath);
-
-		var pkg;
-		var pkgPath = findupSync('package.json');
-
-		if (pkgPath) {
-			pkg = require(pkgPath);
-		} else {
-			console.log('Couldn\'t find package.json.');
-			return;
-		}
-
-		var name = pkg.name || path.basename(dirPath, path.extname(dirPath));
-
-		getGulpTasks(function (err, tasks) {
-			if (err) {
-				console.log(err);
-				return;
-			}
-
-			// Only update the TrayMenu if the path changed
-			if (foundForPath !== dirPath) {
-				foundForPath = dirPath;
-				updateTrayMenu(name, tasks);
-			}
-		});
+		setActiveProject(dirPath);
 	});
 }
 
@@ -145,7 +214,7 @@ app.on('ready', function () {
 	tray = new Tray(path.join(__dirname, '/menubar-icon.png'));
 	tray.setPressedImage(path.join(__dirname, 'menubar-icon-alt.png'));
 
-	updateTrayMenu('No gulpfile found');
+	createTrayMenu();
 	updateTray();
 
 	if (DEBUG) {

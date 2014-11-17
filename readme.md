@@ -21,16 +21,21 @@ Follow this [guide](https://github.com/sindresorhus/guides/blob/master/launch-ap
 
 ## Dev
 
-##### Setup
+```
+$ npm install
+```
 
-- Download [atom-shell](https://github.com/atom/atom-shell/releases), rename `Atom.app` to `atom-shell.app` and put it in `/Applications`
-- Add `alias atom-shell='/Applications/atom-shell.app/Contents/MacOS/atom'` to your .bashrc/.zshrc
+### Run
 
-##### Run
+```
+$ npm start
+```
 
-- `cd` into the `app` directory
-- Run `npm install` *(only first time)*
-- Run `atom-shell .`
+### Build
+
+```
+$ npm run build
+```
 
 
 ## License
