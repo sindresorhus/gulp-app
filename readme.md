@@ -11,7 +11,11 @@ Easily run gulp tasks from the current directory in Finder and get notified when
 
 ## Install
 
-[Download](https://github.com/sindresorhus/gulp-app/releases) the app, unzip, and move it to the `Applications` folder.
+```
+$ brew cask install gulp
+```
+
+Or [download](https://github.com/sindresorhus/gulp-app/releases) the app, unzip, and move it to the `Applications` folder.
 
 
 ## Launch on startup
