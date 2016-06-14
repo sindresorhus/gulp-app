@@ -1,7 +1,7 @@
 'use strict';
 const path = require('path');
 const spawn = require('child_process').spawn;
-const findupSync = require('findup-sync');
+const pkgUp = require('pkg-up');
 const currentPath = require('current-path');
 const displayNotification = require('display-notification');
 const getGulpTasks = require('get-gulp-tasks');
@@ -107,7 +107,7 @@ function createProjectMenu() {
 			dialog.showOpenDialog(null, {
 				title: 'Pick a project',
 				properties: ['openDirectory'],
-				defaultPath: path.resolve(process.cwd(), '..')
+				defaultPath: path.resolve('..')
 			}, dirs => {
 				setActiveProject(dirs[0]);
 				addRecentProject(currentProject);
@@ -165,7 +165,7 @@ function setActiveProject(dirPath) {
 	currentProject = {};
 	process.chdir(dirPath);
 
-	const pkgPath = findupSync('package.json');
+	const pkgPath = pkgUp.sync();
 
 	if (!pkgPath) {
 		console.log('Couldn\'t find package.json');
@@ -177,15 +177,7 @@ function setActiveProject(dirPath) {
 	currentProject.path = dirPath;
 	currentProject.name = pkg.name || path.basename(dirPath, path.extname(dirPath));
 
-	getGulpTasks((err, tasks) => {
-		if (err) {
-			if (err.code !== 'MODULE_NOT_FOUND') {
-				console.error(err);
-			}
-
-			return;
-		}
-
+	getGulpTasks().then(tasks => {
 		tasks = _.pull(tasks, 'default');
 		tasks.unshift('default');
 
@@ -198,13 +190,17 @@ function setActiveProject(dirPath) {
 			prevPath = dirPath;
 			createTrayMenu();
 		}
+	}).catch(err => {
+		if (err.code !== 'MODULE_NOT_FOUND') {
+			console.error(err);
+		}
 	});
 }
 
 function updateTray() {
-	currentPath((_, dirPath) => {
+	currentPath().then(dir => {
 		setTimeout(updateTray, TRAY_UPDATE_INTERVAL);
-		setActiveProject(dirPath);
+		setActiveProject(dir);
 	});
 }
 

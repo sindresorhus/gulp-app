@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager . $npm_package_productName --prune --asar --ignore=node_modules/electron-prebuilt --ignore=node_modules/electron-packager --ignore=.git",
+    "build": "electron-packager . $npm_package_productName --prune --asar",
     "test": "xo"
   },
   "keywords": [
@@ -33,16 +33,16 @@
   ],
   "private": true,
   "dependencies": {
-    "current-path": "^1.0.0",
-    "display-notification": "^1.0.1",
-    "findup-sync": "^0.2.1",
-    "fix-path": "^1.0.0",
-    "get-gulp-tasks": "^1.0.1",
+    "current-path": "^2.0.0",
+    "display-notification": "^2.0.0",
+    "fix-path": "^2.0.0",
+    "get-gulp-tasks": "^4.0.0",
     "gulp": "^3.6.2",
-    "lodash": "^3.8.0"
+    "lodash": "^4.13.1",
+    "pkg-up": "^1.0.0"
   },
   "devDependencies": {
-    "electron-packager": "^3.3.0",
+    "electron-packager": "^7.0.3",
     "electron-prebuilt": "^1.2.2",
     "xo": "*"
   },
