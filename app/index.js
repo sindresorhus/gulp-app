@@ -1,26 +1,26 @@
 'use strict';
-var path = require('path');
-var spawn = require('child_process').spawn;
-var findupSync = require('findup-sync');
-var currentPath = require('current-path');
-var displayNotification = require('display-notification');
-var getGulpTasks = require('get-gulp-tasks');
-var _ = require('lodash');
-var fixPath = require('fix-path');
+const path = require('path');
+const spawn = require('child_process').spawn;
+const findupSync = require('findup-sync');
+const currentPath = require('current-path');
+const displayNotification = require('display-notification');
+const getGulpTasks = require('get-gulp-tasks');
+const _ = require('lodash');
+const fixPath = require('fix-path');
 
-var app = require('app');
-var dialog = require('dialog');
-var Tray = require('tray');
-var Menu = require('menu');
-var MenuItem = require('menu-item');
+const app = require('app');
+const dialog = require('dialog');
+const Tray = require('tray');
+const Menu = require('menu');
+const MenuItem = require('menu-item');
 
-var DEBUG = true;
-var TRAY_UPDATE_INTERVAL = 1000;
+const DEBUG = true;
+const TRAY_UPDATE_INTERVAL = 1000;
 
-var tray;
-var prevPath;
-var recentProjects = [];
-var currentProject = {
+let tray;
+let prevPath;
+let recentProjects = [];
+let currentProject = {
 	name: 'No gulpfile found',
 	tasks: []
 };
@@ -33,35 +33,36 @@ app.dock.hide();
 fixPath();
 
 function runTask(taskName) {
-	var gulpPath = path.join(__dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
-	var cp = spawn(gulpPath, [taskName, '--no-color']);
+	const gulpPath = path.join(__dirname, 'node_modules', 'gulp', 'bin', 'gulp.js');
+	const cp = spawn(gulpPath, [taskName, '--no-color']);
 
 	cp.stdout.setEncoding('utf8');
-	cp.stdout.on('data', function (data) {
+	cp.stdout.on('data', data => {
 		console.log(data);
 	});
 
 	// TODO: show progress in menubar menu
-	//tray.menu = createTrayMenu(name, [], 'progress here');
+	// tray.menu = createTrayMenu(name, [], 'progress here');
 
 	cp.stderr.setEncoding('utf8');
-	cp.stderr.on('data', function (data) {
+
+	cp.stderr.on('data', data => {
 		console.error(data);
-		displayNotification({text: '[error] ' + data});
+		displayNotification({text: `[error] ${data}`});
 	});
 
-	cp.on('exit', function (code) {
+	cp.on('exit', code => {
 		if (code === 0) {
 			displayNotification({
 				title: 'gulp',
 				subtitle: 'Finished running tasks'
 			});
 		} else {
-			console.error('Exited with error code ' + code);
+			console.error(`Exited with error code ${code}`);
 
 			displayNotification({
 				title: 'gulp',
-				subtitle: 'Exited with error code ' + code,
+				subtitle: `Exited with error code ${code}`,
 				sound: 'Basso'
 			});
 		}
@@ -69,9 +70,7 @@ function runTask(taskName) {
 }
 
 function addRecentProject(project) {
-	recentProjects = recentProjects.filter(function (el) {
-		return el.name !== project.name;
-	});
+	recentProjects = recentProjects.filter(x => x.name !== project.name);
 
 	if (recentProjects.length === 10) {
 		recentProjects.pop();
@@ -81,7 +80,7 @@ function addRecentProject(project) {
 }
 
 function createProjectMenu() {
-	var menu = new Menu();
+	const menu = new Menu();
 
 	if (process.platform === 'darwin' || process.platform === 'win32') {
 		menu.append(new MenuItem({
@@ -92,7 +91,7 @@ function createProjectMenu() {
 	}
 
 	if (recentProjects.length > 0) {
-		recentProjects.forEach(function (el) {
+		recentProjects.forEach(el => {
 			menu.append(new MenuItem({
 				label: el.name,
 				type: 'radio',
@@ -105,12 +104,12 @@ function createProjectMenu() {
 
 	menu.append(new MenuItem({
 		label: 'Open Project',
-		click: function () {
+		click() {
 			dialog.showOpenDialog(null, {
 				title: 'Pick a project',
 				properties: ['openDirectory'],
 				defaultPath: path.resolve(process.cwd(), '..')
-			}, function (dirs) {
+			}, dirs => {
 				setActiveProject(dirs[0]);
 				addRecentProject(currentProject);
 				createTrayMenu();
@@ -122,7 +121,7 @@ function createProjectMenu() {
 
 	menu.append(new MenuItem({
 		label: 'Clear',
-		click: function () {
+		click() {
 			recentProjects.length = 0;
 			createTrayMenu();
 		}
@@ -132,7 +131,7 @@ function createProjectMenu() {
 }
 
 function createTrayMenu() {
-	var menu = new Menu();
+	const menu = new Menu();
 
 	menu.append(new MenuItem({
 		label: currentProject.name,
@@ -142,10 +141,10 @@ function createTrayMenu() {
 	if (currentProject.tasks && currentProject.tasks.length > 0) {
 		menu.append(new MenuItem({type: 'separator'}));
 
-		currentProject.tasks.forEach(function (el) {
+		currentProject.tasks.forEach(el => {
 			menu.append(new MenuItem({
 				label: el,
-				click: function () {
+				click() {
 					runTask(el);
 				}
 			}));
@@ -167,19 +166,19 @@ function setActiveProject(dirPath) {
 	currentProject = {};
 	process.chdir(dirPath);
 
-	var pkgPath = findupSync('package.json');
+	const pkgPath = findupSync('package.json');
 
 	if (!pkgPath) {
 		console.log('Couldn\'t find package.json');
 		return;
 	}
 
-	var pkg = require(pkgPath);
+	const pkg = require(pkgPath);
 
 	currentProject.path = dirPath;
 	currentProject.name = pkg.name || path.basename(dirPath, path.extname(dirPath));
 
-	getGulpTasks(function (err, tasks) {
+	getGulpTasks((err, tasks) => {
 		if (err) {
 			if (err.code !== 'MODULE_NOT_FOUND') {
 				console.error(err);
@@ -204,20 +203,20 @@ function setActiveProject(dirPath) {
 }
 
 function updateTray() {
-	currentPath(function (err, dirPath) {
+	currentPath((_, dirPath) => {
 		setTimeout(updateTray, TRAY_UPDATE_INTERVAL);
 		setActiveProject(dirPath);
 	});
 }
 
-app.on('ready', function () {
-	tray = new Tray(path.join(__dirname, '/menubar-icon.png'));
+app.on('ready', () => {
+	tray = new Tray(path.join(__dirname, 'menubar-icon.png'));
 	tray.setPressedImage(path.join(__dirname, 'menubar-icon-alt.png'));
 
 	createTrayMenu();
 	updateTray();
 
 	if (DEBUG) {
-		//gui.Window.get().showDevTools();
+		// gui.Window.get().showDevTools();
 	}
 });
