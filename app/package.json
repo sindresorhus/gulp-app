@@ -2,7 +2,7 @@
   "name": "gulp-app",
   "productName": "Gulp",
   "version": "0.0.1",
-  "description": "gulp as an app (macOS)",
+  "description": "Gulp as an app (macOS)",
   "license": "MIT",
   "repository": "sindresorhus/gulp-app",
   "author": {
@@ -35,6 +35,7 @@
   "dependencies": {
     "current-path": "^2.0.0",
     "display-notification": "^2.0.0",
+    "electron-debug": "^1.0.0",
     "fix-path": "^2.0.0",
     "get-gulp-tasks": "^4.0.0",
     "gulp": "^3.6.2",

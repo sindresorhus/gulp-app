@@ -14,8 +14,6 @@ const dialog = electron.dialog;
 const Tray = electron.Tray;
 const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
-
-const DEBUG = true;
 const TRAY_UPDATE_INTERVAL = 1000;
 
 let tray;
@@ -83,7 +81,9 @@ function createProjectMenu() {
 
 	if (process.platform === 'darwin' || process.platform === 'win32') {
 		menu.append(new MenuItem({
-			label: 'Follow Finder'
+			label: 'Follow Finder',
+			type: 'checkbox',
+			checked: true
 		}));
 
 		menu.append(new MenuItem({type: 'separator'}));
@@ -102,7 +102,7 @@ function createProjectMenu() {
 	}
 
 	menu.append(new MenuItem({
-		label: 'Open Project',
+		label: 'Open Project...',
 		click() {
 			dialog.showOpenDialog(null, {
 				title: 'Pick a project',
@@ -152,7 +152,7 @@ function createTrayMenu() {
 
 	menu.append(new MenuItem({type: 'separator'}));
 	menu.append(new MenuItem({
-		label: 'Quit',
+		label: process.platform === 'darwin' ? `Quit ${app.getName()}` : 'Quit',
 		click: app.quit
 	}));
 
@@ -209,8 +209,4 @@ app.on('ready', () => {
 
 	createTrayMenu();
 	updateTray();
-
-	if (DEBUG) {
-		// gui.Window.get().showDevTools();
-	}
 });
