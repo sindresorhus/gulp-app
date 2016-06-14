@@ -7,12 +7,13 @@ const displayNotification = require('display-notification');
 const getGulpTasks = require('get-gulp-tasks');
 const _ = require('lodash');
 const fixPath = require('fix-path');
+const electron = require('electron');
 
-const app = require('app');
-const dialog = require('dialog');
-const Tray = require('tray');
-const Menu = require('menu');
-const MenuItem = require('menu-item');
+const app = electron.app;
+const dialog = electron.dialog;
+const Tray = electron.Tray;
+const Menu = electron.Menu;
+const MenuItem = electron.MenuItem;
 
 const DEBUG = true;
 const TRAY_UPDATE_INTERVAL = 1000;
@@ -24,8 +25,6 @@ let currentProject = {
 	name: 'No gulpfile found',
 	tasks: []
 };
-
-require('crash-reporter').start();
 
 app.dock.hide();
 
@@ -91,13 +90,13 @@ function createProjectMenu() {
 	}
 
 	if (recentProjects.length > 0) {
-		recentProjects.forEach(el => {
+		for (const el of recentProjects) {
 			menu.append(new MenuItem({
 				label: el.name,
 				type: 'radio',
 				checked: el.name === currentProject.name
 			}));
-		});
+		}
 
 		menu.append(new MenuItem({type: 'separator'}));
 	}
@@ -141,14 +140,14 @@ function createTrayMenu() {
 	if (currentProject.tasks && currentProject.tasks.length > 0) {
 		menu.append(new MenuItem({type: 'separator'}));
 
-		currentProject.tasks.forEach(el => {
+		for (const el of currentProject.tasks) {
 			menu.append(new MenuItem({
 				label: el,
 				click() {
 					runTask(el);
 				}
 			}));
-		});
+		}
 	}
 
 	menu.append(new MenuItem({type: 'separator'}));

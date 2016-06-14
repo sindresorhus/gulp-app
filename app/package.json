@@ -13,9 +13,6 @@
   "contributors": [
     "Fabrice Weinberg <Fabrice@weinberg.me>"
   ],
-  "engines": {
-    "node": ">=0.10.0"
-  },
   "scripts": {
     "start": "electron .",
     "build": "electron-packager . $npm_package_productName --prune --asar --ignore=node_modules/electron-prebuilt --ignore=node_modules/electron-packager --ignore=.git",
@@ -46,7 +43,7 @@
   },
   "devDependencies": {
     "electron-packager": "^3.3.0",
-    "electron-prebuilt": "^0.25.2",
+    "electron-prebuilt": "^1.2.2",
     "xo": "*"
   },
   "xo": {
