@@ -205,8 +205,7 @@ function updateTray() {
 }
 
 app.on('ready', () => {
-	tray = new Tray(path.join(__dirname, 'menubar-icon.png'));
-	tray.setPressedImage(path.join(__dirname, 'menubar-icon-alt.png'));
+	tray = new Tray(path.join(__dirname, 'menubar-icon-Template.png'));
 
 	createTrayMenu();
 	updateTray();
