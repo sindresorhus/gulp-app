@@ -2,7 +2,7 @@
   "name": "gulp-app",
   "productName": "Gulp",
   "version": "0.0.1",
-  "description": "gulp as an app (OS X)",
+  "description": "gulp as an app (macOS)",
   "license": "MIT",
   "repository": "sindresorhus/gulp-app",
   "author": {
@@ -30,6 +30,7 @@
     "runner",
     "app",
     "ui",
+    "macos",
     "osx"
   ],
   "private": true,

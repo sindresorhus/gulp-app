@@ -29,7 +29,7 @@ require('crash-reporter').start();
 
 app.dock.hide();
 
-// fix the $PATH on OS X
+// fix the $PATH on macOS
 fixPath();
 
 function runTask(taskName) {
