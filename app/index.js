@@ -111,6 +111,10 @@ function createProjectMenu() {
 				properties: ['openDirectory'],
 				defaultPath: path.resolve('..')
 			}, dirs => {
+				if (!dirs) {
+					return;
+				}
+
 				setActiveProject(dirs[0]);
 				addRecentProject(currentProject);
 				createTrayMenu();
