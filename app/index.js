@@ -111,7 +111,7 @@ function createProjectMenu() {
 				properties: ['openDirectory'],
 				defaultPath: path.resolve('..')
 			}, dirs => {
-				setActiveProject(dirs[0]);
+				if (dirs) setActiveProject(dirs[0]);
 				addRecentProject(currentProject);
 				createTrayMenu();
 			});
@@ -207,8 +207,11 @@ function updateTray() {
 }
 
 app.on('ready', () => {
-	tray = new Tray(path.join(__dirname, 'menubar-icon-Template.png'));
-
+	if (process.platform == "linux" || process.platform == "win32") {
+		tray = new Tray(path.join(__dirname, "menubar-icon-alt@2x.png"));
+	} else {
+		tray = new Tray(path.join(__dirname, 'menubar-icon-Template@2x.png'));
+	}
 	createTrayMenu();
 	updateTray();
 });
