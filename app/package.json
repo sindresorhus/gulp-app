@@ -48,6 +48,9 @@
     "xo": "*"
   },
   "xo": {
-    "esnext": true
+    "esnext": true,
+    "rules": {
+      "import/no-extraneous-dependencies": 0
+    }
   }
 }
