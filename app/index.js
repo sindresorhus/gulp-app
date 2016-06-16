@@ -24,7 +24,9 @@ let currentProject = {
 	tasks: []
 };
 
-app.dock.hide();
+if (process.platform === 'darwin') {
+	app.dock.hide();
+}
 
 // fix the $PATH on macOS
 fixPath();
