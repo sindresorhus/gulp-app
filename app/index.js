@@ -207,8 +207,11 @@ function updateTray() {
 }
 
 app.on('ready', () => {
-	tray = new Tray(path.join(__dirname, 'menubar-icon-Template.png'));
-
+	if (process.platform == "linux" || process.platform == "win32") {
+		tray = new Tray(path.join(__dirname, "menubar-icon-alt@2x.png"));
+	} else {
+		tray = new Tray(path.join(__dirname, 'menubar-icon-Template@2x.png'));
+	}
 	createTrayMenu();
 	updateTray();
 });
