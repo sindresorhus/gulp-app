@@ -207,7 +207,8 @@ function updateTray() {
 }
 
 app.on('ready', () => {
-	tray = new Tray(path.join(__dirname, 'menubar-icon-Template.png'));
+	const name = process.platform === 'darwin' ? 'tray-icon-Template' : 'tray-icon-alt';
+	tray = new Tray(path.join(__dirname, `${name}.png`));
 
 	createTrayMenu();
 	updateTray();
