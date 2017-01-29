@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager . $npm_package_productName --prune --asar",
+    "build": "electron-packager . --asar --overwrite --out=dist",
     "test": "xo"
   },
   "keywords": [
@@ -43,8 +43,8 @@
     "pkg-up": "^1.0.0"
   },
   "devDependencies": {
-    "electron-packager": "^7.0.3",
     "electron": "^1.3.3",
+    "electron-packager": "^8.5.1",
     "xo": "*"
   },
   "xo": {
