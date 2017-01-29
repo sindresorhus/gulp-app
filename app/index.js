@@ -1,13 +1,13 @@
 'use strict';
 const path = require('path');
 const spawn = require('child_process').spawn;
+const electron = require('electron');
 const pkgUp = require('pkg-up');
 const currentPath = require('current-path');
 const displayNotification = require('display-notification');
 const getGulpTasks = require('get-gulp-tasks');
 const _ = require('lodash');
 const fixPath = require('fix-path');
-const electron = require('electron');
 
 const app = electron.app;
 const dialog = electron.dialog;
