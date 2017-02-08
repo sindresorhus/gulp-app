@@ -213,7 +213,9 @@ function updateTray() {
 app.on('ready', () => {
 	const name = process.platform === 'darwin' ? 'tray-icon-Template' : 'tray-icon-alt';
 	tray = new Tray(path.join(__dirname, `${name}.png`));
-
+	notifi();
 	createTrayMenu();
 	updateTray();
 });
+
+process.on('uncaughtException', (e) => { console.error(e) });
