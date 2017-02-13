@@ -19,10 +19,11 @@ const TRAY_UPDATE_INTERVAL = 1000;
 let tray;
 let prevPath;
 let recentProjects = [];
-let currentProject = {
+let emptyProject = {
 	name: 'No gulpfile found',
 	tasks: []
 };
+let currentProject = emptyProject;
 
 if (process.platform === 'darwin') {
 	app.dock.hide();
@@ -168,6 +169,12 @@ function createTrayMenu() {
 }
 
 function setActiveProject(dirPath) {
+	// TODO: this prevent updating of tasklist from changes in the gulpfile
+	if (prevPath === dirPath) {
+		return;
+	}
+	prevPath = dirPath;
+
 	currentProject = {};
 	process.chdir(dirPath);
 
@@ -175,6 +182,8 @@ function setActiveProject(dirPath) {
 
 	if (!pkgPath) {
 		console.log('Couldn\'t find package.json');
+		currentProject = emptyProject;
+		createTrayMenu();
 		return;
 	}
 
@@ -191,19 +200,22 @@ function setActiveProject(dirPath) {
 
 		console.log(prevPath, dirPath);
 
-		// TODO: this prevent updating of tasklist from changes in the gulpfile
-		if (prevPath !== dirPath) {
-			prevPath = dirPath;
-			createTrayMenu();
-		}
+		createTrayMenu();
 	}).catch(err => {
+		if (err.code === 1) {
+			// TODO: no gulp.
+		}
+
 		if (err.code !== 'MODULE_NOT_FOUND') {
 			console.error(err);
+			currentProject = emptyProject;
+			createTrayMenu();
 		}
 	});
 }
 
 function updateTray() {
+
 	currentPath().then(dir => {
 		setTimeout(updateTray, TRAY_UPDATE_INTERVAL);
 		setActiveProject(dir);
