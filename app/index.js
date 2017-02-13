@@ -217,3 +217,5 @@ app.on('ready', () => {
 	createTrayMenu();
 	updateTray();
 });
+
+process.on('uncaughtException', console.error);
