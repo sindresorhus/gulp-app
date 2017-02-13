@@ -218,4 +218,4 @@ app.on('ready', () => {
 	updateTray();
 });
 
-process.on('uncaughtException', (e) => { console.error(e) });
+process.on('uncaughtException', console.error);
