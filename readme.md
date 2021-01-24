@@ -20,7 +20,7 @@ Or [download](https://github.com/sindresorhus/gulp-app/releases) the app, unzip,
 
 ## Launch on startup
 
-Follow this [guide](https://github.com/sindresorhus/guides/blob/master/launch-app-on-startup-macos.md) if you would like the app to launch when you start your computer.
+Follow this [guide](https://github.com/sindresorhus/guides/blob/main/launch-app-on-startup-macos.md) if you would like the app to launch when you start your computer.
 
 
 ## Dev
